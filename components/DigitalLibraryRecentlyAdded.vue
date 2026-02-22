@@ -49,7 +49,7 @@ const recentBooks = [
     type: 'LIBRO DE TEXTO', 
     module: 'MÓDULO 4.2', 
     isNew: true, 
-    image: '/images/featured_1.png' 
+    image: 'https://images.pexels.com/photos/14377364/pexels-photo-14377364.jpeg' 
   },
   { 
     title: 'Guía de Mapeo Subsuperficial', 
@@ -57,7 +57,7 @@ const recentBooks = [
     module: 'DEPTO. GEOLOGÍA', 
     isNew: false, 
     dept: 'DEPTO. GEOLOGÍA',
-    image: '/images/featured_2.png' 
+    image: 'https://images.pexels.com/photos/9630188/pexels-photo-9630188.jpeg' 
   },
   { 
     title: 'Procedimientos Operativos Estándar de Mantenimiento de Plataformas', 
@@ -65,7 +65,7 @@ const recentBooks = [
     module: 'MANUAL TÉCNICO', 
     isNew: false, 
     dept: 'MANTENIMIENTO',
-    image: '/images/featured_3.png' 
+    image: 'https://images.pexels.com/photos/11718060/pexels-photo-11718060.png' 
   },
   { 
     title: 'Simulación de Yacimientos 2024', 
@@ -73,7 +73,7 @@ const recentBooks = [
     module: 'MÓDULO 5.1', 
     isNew: false, 
     dept: 'INGENIERÍA',
-    image: '/images/hero.png' 
+    image: 'https://images.pexels.com/photos/16862261/pexels-photo-16862261.jpeg' 
   }
 ]
 </script>
