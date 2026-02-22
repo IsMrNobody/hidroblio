@@ -1,0 +1,60 @@
+# Rol del Agente
+Actúa como un Desarrollador Senior Full-Stack experto en Vue.js, Nuxt.js y diseño UI/UX con Vuetify. Tu tarea es generar la estructura, componentes y lógica para una Web App educativa llamada "HidroBiblio".
+
+# Descripción del Proyecto
+"HidroBiblio" es una biblioteca digital gamificada enfocada en la educación sobre hidrocarburos (petróleo, ingeniería, sostenibilidad). La app debe ser totalmente responsiva y ofrecer una experiencia de usuario inmersiva.
+
+# Stack Tecnológico
+- Framework: Nuxt.js (versión 3).
+- UI Library: Vuetify (última versión compatible).
+- State Management: Pinia (para manejar el perfil del estudiante y estado de recursos).
+- Iconos: Material Design Icons (MDI).
+
+# Sistema de Diseño y Estilos
+Usa la siguiente paleta de colores estricta extraída de la guía de estilo (Tema "Coffee"):
+- Primario (Primary): #561C24 (Rojo vino oscuro)
+- Secundario (Secondary): #6D2932 (Rojo tierra)
+- Acento (Accent): #C7B7A3 (Beige medio)
+- Fondo (Background): #E8D8C4 (Beige claro)
+- Estilo Visual: Estética de biblioteca clásica pero moderna. Usa tarjetas (v-card) con bordes suaves y sombras para dar profundidad.
+
+# Flujo de Usuario y Requerimientos Funcionales
+
+1. Pantalla de Bienvenida y Registro (Gamificada):
+   - Mostrar el logo de "HidroBiblio" y el mensaje introductorio sobre el mundo de los hidrocarburos.
+   - Formulario de Registro obligatorio con los campos: Nombre, Apellido, Correo, Año que cursa y Sección.
+   - Al completar, dar un feedback visual de "Logro desbloqueado: Registro completado".
+
+2. Dashboard Principal (Layout de 2 Columnas):
+   - Lado Izquierdo (Panel de Usuario - "Mi Perfil"):
+     * Debe ser persistente (v-navigation-drawer o columna fija).
+     * Mostrar datos del estudiante (Nombre, Año, Sección).
+     * Botones de acción rápida: "Mis Anotaciones", "Textos Subrayados", "Descargas".
+     * Barra de progreso visual (Gamificación) que muestre el avance de lectura.
+   
+   - Lado Derecho (Catálogo de Recursos):
+     * Mostrar tarjetas interactivas grandes para los niveles académicos:
+       - 1er año “U”
+       - 2do año “U”
+       - 3er año “U”
+       - 4to año “U”
+       - 5to año “U”
+
+3. Vista de Recursos (Drill-down):
+   - Al hacer clic en un Año, desplegar un submenú o vista filtrada con tipos de recursos:
+     * Texto
+     * Imagen
+     * Video
+     * Documentos
+   - Al seleccionar un recurso, mostrar el contenido con opciones flotantes (FAB o barra de herramientas) para:
+     * Subrayar texto.
+     * Crear una anotación personal.
+     * Descargar/Guardar archivo.
+
+# Instrucciones de Implementación
+1. Configura el archivo `nuxt.config.ts` para incluir Vuetify y definir el tema personalizado con los colores hexagesimales provistos.
+2. Crea un Store de Pinia `useStudentStore` para guardar la información del registro y el progreso.
+3. Genera los componentes: `StudentProfile.vue` (sidebar), `YearCatalog.vue` (grid de años) y `ResourceViewer.vue`.
+4. Implementa una navegación fluida donde el catálogo aparezca dinámicamente.
+
+Por favor, genera el código inicial, la estructura de carpetas y la configuración del tema.
