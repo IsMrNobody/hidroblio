@@ -7,7 +7,7 @@
         <v-app-bar-nav-icon color="white" @click.stop="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
       </template>
       <v-app-bar-title class="font-weight-bold text-h5 ml-2" style="font-family: 'Playfair Display', serif !important;">
-        HidroBiblio
+        HidroBiblio2
       </v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn icon="mdi-magnify" color="accent" variant="text"></v-btn>

@@ -15,7 +15,7 @@
         rounded="xl"
         elevation="4"
         prepend-icon="mdi-plus-circle"
-        @click="dialogNuevo = true"
+        @click="abrirNuevo"
         class="font-weight-black letter-spacing-1"
         :block="mobile"
       >
@@ -54,6 +54,7 @@
         <AdminArticleCard 
           :articulo="art" 
           @delete="confirmarBorrar"
+          @edit="abrirEditar"
         />
       </v-col>
     </v-row>
@@ -72,10 +73,12 @@
       </v-col>
     </v-row>
 
-    <!-- Modal para Nuevo Artículo -->
+    <!-- Modal para Nuevo/Editar Artículo -->
     <AdminArticleForm 
-      v-model="dialogNuevo" 
+      v-model="dialogForm" 
+      :articuloAEditar="articuloAEditar"
       @created="cargarArticulos"
+      @updated="cargarArticulos"
     />
 
     <!-- Dialog: Confirmar Borrado -->
@@ -120,9 +123,10 @@ const { obtenerArticulos, eliminarArticulo } = useGestorArticulos()
 const articulos = ref<Articulo[]>([])
 const cargando = ref(true)
 const borrando = ref(false)
-const dialogNuevo = ref(false)
+const dialogForm = ref(false)
 const confirmarEliminar = ref(false)
 const articuloSeleccionado = ref<Articulo | null>(null)
+const articuloAEditar = ref<Articulo | null>(null)
 const filtroAnio = ref<string | null>(null)
 
 const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
@@ -131,12 +135,22 @@ const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
 const cargarArticulos = async () => {
   cargando.value = true
   try {
-    articulos.value = await obtenerArticulos(filtroAnio.value || undefined)
+    articulos.value = await obtenerArticulos(filtroAnio.value || undefined, true)
   } catch (error) {
     console.error('Error al cargar artículos:', error)
   } finally {
     cargando.value = false
   }
+}
+
+const abrirNuevo = () => {
+  articuloAEditar.value = null
+  dialogForm.value = true
+}
+
+const abrirEditar = (articulo: Articulo) => {
+  articuloAEditar.value = articulo
+  dialogForm.value = true
 }
 
 const confirmarBorrar = (articulo: Articulo) => {

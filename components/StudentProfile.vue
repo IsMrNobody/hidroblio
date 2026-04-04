@@ -89,7 +89,7 @@
     </v-list>
 
     <!-- Bottom Actions -->
-    <v-btn
+    <!-- <v-btn
       block
       height="56"
       color="accent"
@@ -99,7 +99,7 @@
       prepend-icon="mdi-magnify"
     >
       BUSCAR EN EL ARCHIVO
-    </v-btn>
+    </v-btn> -->
 
     <!-- Logout -->
     <v-btn

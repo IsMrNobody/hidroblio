@@ -127,9 +127,33 @@ export const useGestorArticulos = () => {
     }
   }
 
+  /**
+   * Actualizar un artículo existente
+   */
+  const actualizarArticulo = async (articulo: Articulo) => {
+    if (!articulo.id) return
+
+    try {
+      const { id, createdAt, ...data } = articulo
+      const docRef = doc($db, 'articulos', id)
+      
+      await updateDoc(docRef, {
+        ...data,
+        updatedAt: serverTimestamp()
+      })
+
+      // Invalidar cache
+      store.lastFetched = 0
+    } catch (error) {
+      console.error('Error al actualizar artículo:', error)
+      throw error
+    }
+  }
+
   return {
     obtenerArticulos,
     crearArticulo,
+    actualizarArticulo,
     eliminarArticulo,
     obtenerArticuloPorId,
   }

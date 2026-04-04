@@ -11,7 +11,7 @@
       <v-toolbar color="primary" dark class="px-6 flex-shrink-0">
         <v-btn icon="mdi-close" variant="text" @click="internalValue = false"></v-btn>
         <v-toolbar-title class="font-weight-black font-display letter-spacing-1">
-          NUEVO ARTÍCULO ACADÉMICO
+          {{ articuloAEditar ? 'EDITAR RECURSO' : 'NUEVO ARTÍCULO ACADÉMICO' }}
         </v-toolbar-title>
       </v-toolbar>
 
@@ -102,7 +102,7 @@
               </v-row>
 
               <!-- Vista previa opcional -->
-              <v-img v-if="fotoPreview" :src="fotoPreview" height="150" class="mt-4 rounded-lg border-accent" contain></v-img>
+              <v-img v-if="fotoPreview || form.fotoUrl" :src="fotoPreview || form.fotoUrl" height="150" class="mt-4 rounded-lg border-accent" contain></v-img>
             </v-col>
           </v-row>
 
@@ -127,8 +127,8 @@
               min-width="200"
               class="w-full w-sm-auto"
             >
-              <v-icon start>mdi-cloud-upload</v-icon>
-              PUBLICAR ARTÍCULO
+              <v-icon start>{{ articuloAEditar ? 'mdi-content-save-edit' : 'mdi-cloud-upload' }}</v-icon>
+              {{ articuloAEditar ? 'GUARDAR CAMBIOS' : 'PUBLICAR ARTÍCULO' }}
             </v-btn>
           </div>
         </v-form>
@@ -138,18 +138,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useDisplay } from 'vuetify'
-import { useGestorArticulos } from '~/composables/domain/GestorArticulos'
+import { useGestorArticulos, type Articulo } from '~/composables/domain/GestorArticulos'
 
 const props = defineProps<{
   modelValue: boolean
+  articuloAEditar?: Articulo | null
 }>()
 
-const emit = defineEmits(['update:modelValue', 'created'])
+const emit = defineEmits(['update:modelValue', 'created', 'updated'])
 
 const { sm } = useDisplay()
-const { crearArticulo } = useGestorArticulos()
+const { crearArticulo, actualizarArticulo } = useGestorArticulos()
 
 const internalValue = computed({
   get: () => props.modelValue,
@@ -160,9 +161,9 @@ const formRef = ref()
 const isSaving = ref(false)
 const isUploading = ref(false)
 const fotoPreview = ref('')
-const options = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
-const opcionesAnio = options
+const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
 
+// Formulario reactivo base
 const form = reactive({
   titulo: '',
   contenido: '',
@@ -172,7 +173,34 @@ const form = reactive({
   nombreDocumento: ''
 })
 
+// DEFINIR ESTO ANTES DEL WATCH PARA EVITAR REFERENCE ERROR
 const archivoFoto = ref<File[]>([])
+
+// Observar cuando se pasa un artículo para editar
+watch(() => props.articuloAEditar, (nuevoArticulo) => {
+  if (nuevoArticulo) {
+    Object.assign(form, {
+      titulo: nuevoArticulo.titulo || '',
+      contenido: nuevoArticulo.contenido || '',
+      anio: nuevoArticulo.anio || '',
+      fotoUrl: nuevoArticulo.fotoUrl || '',
+      documentoUrl: nuevoArticulo.documentoUrl || '',
+      nombreDocumento: nuevoArticulo.nombreDocumento || ''
+    })
+    fotoPreview.value = ''
+  } else {
+    Object.assign(form, {
+      titulo: '',
+      contenido: '',
+      anio: '',
+      fotoUrl: '',
+      documentoUrl: '',
+      nombreDocumento: ''
+    })
+    fotoPreview.value = ''
+    archivoFoto.value = []
+  }
+}, { immediate: true })
 
 const previewImage = () => {
   if (archivoFoto.value?.[0]) {
@@ -183,9 +211,8 @@ const previewImage = () => {
 }
 
 const subirACloudinary = async (file: File) => {
-  // CONFIGURAR ESTOS VALORES
   const cloudName = 'dku13l2ep' 
-  const uploadPreset = 'hidroblio' // Asegúrate de que sea 'Unsigned' en Cloudinary
+  const uploadPreset = 'hidroblio'
 
   isUploading.value = true
   const formData = new FormData()
@@ -198,10 +225,7 @@ const subirACloudinary = async (file: File) => {
       body: formData
     })
     const data = await res.json()
-    if (data.secure_url) {
-      return data.secure_url
-    }
-    throw new Error('No se recibió la URL de Cloudinary')
+    return data.secure_url || null
   } catch (error) {
     console.error('Error al subir a Cloudinary:', error)
     return null
@@ -217,43 +241,30 @@ const guardar = async () => {
   isSaving.value = true
   
   try {
-    // Detectar el archivo correctamente (ya sea array o archivo único por Vuetify)
-    const file = Array.isArray(archivoFoto.value) ? archivoFoto.value[0] : (archivoFoto.value as unknown as File);
+    const file = Array.isArray(archivoFoto.value) ? archivoFoto.value[0] : (archivoFoto.value as any);
 
-    if (file) {
-      console.log('Iniciando subida a Cloudinary del archivo:', file.name);
+    if (file && file instanceof File) {
       const url = await subirACloudinary(file)
-      if (url) {
-        form.fotoUrl = url
-        console.log('✅ URL de Cloudinary obtenida con éxito:', url);
-      } else {
-        console.error('❌ No se pudo obtener la URL de Cloudinary, se usará la imagen por defecto.');
-      }
-    } else {
-      console.warn('⚠️ No se seleccionó ninguna foto para subir.');
+      if (url) form.fotoUrl = url
     }
 
-    console.log('Publicando artículo en Firestore...', { ...form });
-    await crearArticulo({ ...form })
+    if (props.articuloAEditar?.id) {
+      await actualizarArticulo({
+        id: props.articuloAEditar.id,
+        ...form
+      })
+      emit('updated')
+      alert('¡Recurso actualizado con éxito!')
+    } else {
+      await crearArticulo({ ...form })
+      emit('created')
+      alert('¡Nuevo recurso académico publicado!')
+    }
     
-    // Reset
-    Object.assign(form, { 
-      titulo: '', 
-      contenido: '', 
-      anio: '',
-      fotoUrl: '',
-      documentoUrl: '',
-      nombreDocumento: ''
-    })
-    archivoFoto.value = []
-    fotoPreview.value = ''
-    
-    emit('created')
     internalValue.value = false
-    alert('¡Artículo académico publicado con éxito!')
   } catch (error) {
-    console.error('Error crítico en el proceso de guardado:', error)
-    alert('Hubo un error al publicar el artículo. Por favor, revisa la consola.')
+    console.error('Error al guardar artículo:', error)
+    alert('Error al realizar la operación. Revisa la consola.')
   } finally {
     isSaving.value = false
   }

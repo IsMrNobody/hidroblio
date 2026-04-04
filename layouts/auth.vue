@@ -18,7 +18,7 @@
                 HidroBiblio
               </h1>
               <p class="text-body-1 text-center" style="color: rgba(255,255,255,0.7); line-height: 1.8;">
-                Tu biblioteca digital gamificada de hidrocarburos. Accede a recursos, anota tus investigaciones y avanza de nivel.
+                Tu biblioteca digital de hidrocarburos. Accede a recursos, anota tus investigaciones y avanza de nivel.
               </p>
               
               <!-- Decorative elements -->

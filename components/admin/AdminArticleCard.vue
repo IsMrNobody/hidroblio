@@ -32,13 +32,23 @@
         prepend-icon="mdi-delete-outline" 
         @click="$emit('delete', articulo)"
       >
-        Eliminar
+        
       </v-btn>
       <v-spacer></v-spacer>
+      <v-btn 
+        color="secondary" 
+        variant="tonal" 
+        rounded="lg" 
+        prepend-icon="mdi-pencil-outline" 
+        @click="$emit('edit', articulo)"
+      >
+        Editar
+      </v-btn>
       <v-btn 
         color="primary" 
         variant="tonal" 
         rounded="lg" 
+        class="ml-2"
         prepend-icon="mdi-eye-outline" 
         :to="`/articulos/${articulo.id}`"
       >
@@ -55,7 +65,7 @@ defineProps<{
   articulo: Articulo
 }>()
 
-defineEmits(['delete'])
+defineEmits(['delete', 'edit'])
 </script>
 
 <style scoped>

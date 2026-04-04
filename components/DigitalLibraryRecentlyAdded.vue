@@ -26,13 +26,13 @@
                 <span class="text-overline font-weight-black text-accent-light d-block mb-1">{{ art.anio }}</span>
                 <h3 class="text-h6 font-weight-bold text-white leading-tight mb-2">{{ art.titulo }}</h3>
                 <v-btn 
-                  icon="mdi-bookmark-plus-outline" 
-                  color="accent" 
+                  :icon="favoritesStore.isFavorite(art.id!) ? 'mdi-bookmark' : 'mdi-bookmark-outline'" 
+                  :color="favoritesStore.isFavorite(art.id!) ? 'primary' : 'accent'" 
                   variant="flat" 
                   size="small" 
                   rounded="lg"
                   :loading="guardandoId === art.id"
-                  @click.stop="handleGuardar(art.id)"
+                  @click.stop="handleGuardar(art.id!)"
                 ></v-btn>
               </div>
             </v-img>
@@ -62,29 +62,28 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { useStudentStore } from '~/stores/student'
+import { useFavoritesStore } from '~/stores/favorites'
 import { useGestorArticulos, type Articulo } from '~/composables/domain/GestorArticulos'
-import { useGestorColecciones } from '~/composables/domain/GestorColecciones'
 
 const { mobile } = useDisplay()
 const router = useRouter()
 const store = useStudentStore()
+const favoritesStore = useFavoritesStore()
 const { obtenerArticulos } = useGestorArticulos()
-const { guardarArticulo } = useGestorColecciones()
 
 const articulos = ref<Articulo[]>([])
 const cargando = ref(true)
 const snackbar = ref(false)
-const snackbarText = ref('Artículo guardado en tu biblioteca')
+const snackbarText = ref('Artículo guardado')
 const guardandoId = ref('')
 
 const cargarArticulosRecientes = async () => {
   cargando.value = true
   try {
-    // Filtrar por el año del estudiante
     const anio = store.profile.year
     articulos.value = await obtenerArticulos(anio)
   } catch (error) {
-    console.error('Error al cargar artículos para el dashboard:', error)
+    console.error('Error al cargar artículos:', error)
   } finally {
     cargando.value = false
   }
@@ -93,9 +92,9 @@ const cargarArticulosRecientes = async () => {
 const handleGuardar = async (id: string) => {
   guardandoId.value = id
   try {
-    const res = await guardarArticulo(id)
-    if (res && typeof res !== 'boolean') {
-      snackbarText.value = res.saved ? 'Artículo añadido a tus guardados' : 'Artículo eliminado de tus guardados'
+    const res = await favoritesStore.toggleFavorite(id)
+    if (res?.success) {
+      snackbarText.value = res.saved ? 'Añadido a tus guardados' : 'Eliminado de tus guardados'
       snackbar.value = true
     }
   } catch (error) {
@@ -142,10 +141,6 @@ onMounted(() => {
 
 .leading-tight {
   line-height: 1.2 !important;
-}
-
-.uppercase {
-  text-transform: uppercase;
 }
 
 .text-accent-light {

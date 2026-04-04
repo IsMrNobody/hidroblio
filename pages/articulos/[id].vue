@@ -120,12 +120,36 @@ const cargarArticulo = async () => {
 
 const formatDate = (timestamp: any) => {
   if (!timestamp) return 'Recientemente'
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-  return new Intl.DateTimeFormat('es-ES', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  }).format(date)
+  
+  try {
+    let date: Date
+    
+    // Si es un Timestamp de Firestore
+    if (timestamp && typeof timestamp.toDate === 'function') {
+      date = timestamp.toDate()
+    } 
+    // Si ya es un objeto Date
+    else if (timestamp instanceof Date) {
+      date = timestamp
+    }
+    // Si es un string o número
+    else {
+      date = new Date(timestamp)
+    }
+
+    // Validar si es una fecha válida
+    if (isNaN(date.getTime())) {
+      return 'Recientemente'
+    }
+
+    return new Intl.DateTimeFormat('es-ES', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }).format(date)
+  } catch (e) {
+    return 'Recientemente'
+  }
 }
 
 onMounted(() => {
