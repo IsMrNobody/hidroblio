@@ -59,6 +59,8 @@
       </v-col>
     </v-row>
 
+
+
     <!-- Empty State -->
     <div v-else-if="!cargando" class="empty-state text-center py-16">
       <v-icon size="80" color="secondary" class="opacity-20 mb-4">mdi-book-multiple-outline</v-icon>
@@ -70,6 +72,16 @@
     <v-row v-else>
       <v-col v-for="i in 6" :key="i" cols="12" sm="6" lg="4">
         <v-skeleton-loader type="card, list-item" class="rounded-xl"></v-skeleton-loader>
+      </v-col>
+    </v-row>
+
+    <!-- Sección de Herramientas Complementarias (Glosario) -->
+    <v-row class="mt-12 pt-8 border-t-accent">
+      <v-col cols="12">
+        <h2 class="text-h4 font-weight-black text-primary font-display mb-6">Herramientas del Sistema</h2>
+      </v-col>
+      <v-col cols="12" md="6">
+        <GlossaryManager />
       </v-col>
     </v-row>
 
@@ -110,6 +122,7 @@ import { useDisplay } from 'vuetify'
 import { useGestorArticulos, type Articulo } from '~/composables/domain/GestorArticulos'
 import AdminArticleCard from '~/components/admin/AdminArticleCard.vue'
 import AdminArticleForm from '~/components/admin/AdminArticleForm.vue'
+import GlossaryManager from '~/components/admin/GlossaryManager.vue'
 
 definePageMeta({
   layout: 'default',
@@ -193,5 +206,9 @@ onMounted(() => {
 
 .error-lighten-4 {
   background-color: #FDEDEE;
+}
+
+.border-t-accent {
+  border-top: 1px solid rgba(199, 183, 163, 0.4);
 }
 </style>

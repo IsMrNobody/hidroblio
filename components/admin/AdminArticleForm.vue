@@ -62,18 +62,35 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <v-file-input
-                    v-model="archivoFoto"
-                    label="Subir Imagen a Cloudinary"
+                    v-model="archivoPortada"
+                    label="Imagen de Portada"
                     accept="image/*"
                     variant="outlined"
                     rounded="xl"
                     bg-color="white"
                     prepend-inner-icon="mdi-camera-plus-outline"
-                    hint="La imagen se subirá automáticamente a tu cuenta de Cloudinary"
+                    hint="Imagen principal que aparece en el listado y hero"
                     persistent-hint
                     :loading="isUploading"
-                    @update:model-value="previewImage"
+                    @update:model-value="previewPortada"
                   ></v-file-input>
+                  <v-img v-if="fotoPortadaPreview || form.fotoUrl" :src="fotoPortadaPreview || form.fotoUrl" height="120" class="mt-2 rounded-lg border-accent" contain></v-img>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-file-input
+                    v-model="archivoArticulo"
+                    label="Imagen del Artículo"
+                    accept="image/*"
+                    variant="outlined"
+                    rounded="xl"
+                    bg-color="white"
+                    prepend-inner-icon="mdi-image-plus-outline"
+                    hint="Imagen que aparece dentro del contenido del artículo"
+                    persistent-hint
+                    :loading="isUploading"
+                    @update:model-value="previewArticulo"
+                  ></v-file-input>
+                  <v-img v-if="fotoArticuloPreview || form.articuloFotoUrl" :src="fotoArticuloPreview || form.articuloFotoUrl" height="120" class="mt-2 rounded-lg border-accent" contain></v-img>
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field
@@ -88,7 +105,7 @@
                     persistent-hint
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12">
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="form.nombreDocumento"
                     label="Nombre visible del recurso"
@@ -100,9 +117,6 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-
-              <!-- Vista previa opcional -->
-              <v-img v-if="fotoPreview || form.fotoUrl" :src="fotoPreview || form.fotoUrl" height="150" class="mt-4 rounded-lg border-accent" contain></v-img>
             </v-col>
           </v-row>
 
@@ -169,12 +183,16 @@ const form = reactive({
   contenido: '',
   anio: '',
   fotoUrl: '',
+  articuloFotoUrl: '',
   documentoUrl: '',
   nombreDocumento: ''
 })
 
 // DEFINIR ESTO ANTES DEL WATCH PARA EVITAR REFERENCE ERROR
-const archivoFoto = ref<File[]>([])
+const archivoPortada = ref<File[]>([])
+const archivoArticulo = ref<File[]>([])
+const fotoPortadaPreview = ref('')
+const fotoArticuloPreview = ref('')
 
 // Observar cuando se pasa un artículo para editar
 watch(() => props.articuloAEditar, (nuevoArticulo) => {
@@ -184,29 +202,42 @@ watch(() => props.articuloAEditar, (nuevoArticulo) => {
       contenido: nuevoArticulo.contenido || '',
       anio: nuevoArticulo.anio || '',
       fotoUrl: nuevoArticulo.fotoUrl || '',
+      articuloFotoUrl: nuevoArticulo.articuloFotoUrl || '',
       documentoUrl: nuevoArticulo.documentoUrl || '',
       nombreDocumento: nuevoArticulo.nombreDocumento || ''
     })
-    fotoPreview.value = ''
+    fotoPortadaPreview.value = ''
+    fotoArticuloPreview.value = ''
   } else {
     Object.assign(form, {
       titulo: '',
       contenido: '',
       anio: '',
       fotoUrl: '',
+      articuloFotoUrl: '',
       documentoUrl: '',
       nombreDocumento: ''
     })
-    fotoPreview.value = ''
-    archivoFoto.value = []
+    fotoPortadaPreview.value = ''
+    fotoArticuloPreview.value = ''
+    archivoPortada.value = []
+    archivoArticulo.value = []
   }
 }, { immediate: true })
 
-const previewImage = () => {
-  if (archivoFoto.value?.[0]) {
-    fotoPreview.value = URL.createObjectURL(archivoFoto.value[0])
+const previewPortada = () => {
+  if (archivoPortada.value?.[0]) {
+    fotoPortadaPreview.value = URL.createObjectURL(archivoPortada.value[0])
   } else {
-    fotoPreview.value = ''
+    fotoPortadaPreview.value = ''
+  }
+}
+
+const previewArticulo = () => {
+  if (archivoArticulo.value?.[0]) {
+    fotoArticuloPreview.value = URL.createObjectURL(archivoArticulo.value[0])
+  } else {
+    fotoArticuloPreview.value = ''
   }
 }
 
@@ -241,11 +272,18 @@ const guardar = async () => {
   isSaving.value = true
   
   try {
-    const file = Array.isArray(archivoFoto.value) ? archivoFoto.value[0] : (archivoFoto.value as any);
-
-    if (file && file instanceof File) {
-      const url = await subirACloudinary(file)
+    // Subir portada si hay una nueva
+    const filePortada = Array.isArray(archivoPortada.value) ? archivoPortada.value[0] : (archivoPortada.value as any);
+    if (filePortada && filePortada instanceof File) {
+      const url = await subirACloudinary(filePortada)
       if (url) form.fotoUrl = url
+    }
+
+    // Subir imagen de artículo si hay una nueva
+    const fileArticulo = Array.isArray(archivoArticulo.value) ? archivoArticulo.value[0] : (archivoArticulo.value as any);
+    if (fileArticulo && fileArticulo instanceof File) {
+      const url = await subirACloudinary(fileArticulo)
+      if (url) form.articuloFotoUrl = url
     }
 
     if (props.articuloAEditar?.id) {

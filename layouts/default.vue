@@ -24,7 +24,14 @@
       ></v-btn>
       <v-spacer></v-spacer>
       <!-- Iconos de utilidad opcionales -->
-      <v-btn icon="mdi-magnify" variant="text" color="secondary" size="small" class="mr-2"></v-btn>
+      <v-btn 
+        icon="mdi-magnify" 
+        variant="text" 
+        color="secondary" 
+        size="small" 
+        class="mr-2"
+        @click="openSearch"
+      ></v-btn>
       <v-btn icon="mdi-bell-outline" variant="text" color="secondary" size="small"></v-btn>
     </v-app-bar>
 
@@ -38,19 +45,27 @@
           <span class="text-caption font-weight-black text-secondary letter-spacing-2 border-b-secondary pb-1">BIBLIOTECA DIGITAL</span>
         </div>
 
-        <!-- Page Content -->
         <slot />
       </v-container>
     </v-main>
+
+    <!-- Search Dialog -->
+    <NavigationAcademicSearchDialog v-if="showSearch" v-model="showSearch" />
   </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import NavigationAcademicSearchDialog from '~/components/navigation/AcademicSearchDialog.vue'
 
 const { mobile } = useDisplay()
 const drawer = ref(!mobile.value)
+const showSearch = ref(false)
+
+const openSearch = () => {
+  showSearch.value = true
+}
 </script>
 
 <style scoped>

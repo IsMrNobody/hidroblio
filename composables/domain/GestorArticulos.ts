@@ -21,12 +21,14 @@ export interface Articulo {
   titulo: string
   contenido: string
   anio: string
-  fotoUrl?: string
+  fotoUrl?: string // Portada
+  articuloFotoUrl?: string // Imagen interna del artículo
   documentoUrl?: string
   nombreDocumento?: string
   createdAt?: any
   updatedAt?: any
 }
+
 
 export const useGestorArticulos = () => {
   const { $db, $storage } = useNuxtApp()

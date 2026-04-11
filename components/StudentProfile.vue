@@ -88,6 +88,49 @@
       </v-list-item>
     </v-list>
 
+    <!-- Library Explorer by Year -->
+    <v-expansion-panels variant="accordion" class="academic-panels mb-3 mt-3 elevation-0">
+      <v-expansion-panel bg-color="black" class="border-0">
+        <v-expansion-panel-title class="pa-2 text-caption font-weight-black text-white letter-spacing-1">
+          <v-icon start size="18" color="accent" class="mr-2">mdi-library-shelves</v-icon>
+          EXPLORAR POR GRADOS
+        </v-expansion-panel-title>
+        <v-expansion-panel-text class="pa-0">
+          <v-list bg-color="transparent" density="compact" class="pa-0">
+            <v-list-item 
+              v-for="anio in opcionesAnio" 
+              :key="anio" 
+              class="rounded-lg year-item mb-1 py-1"
+              @click="navegarAlAnio(anio)"
+            >
+              <template v-slot:prepend>
+                <v-icon size="16" color="accent" class="mr-3">mdi-school-outline</v-icon>
+              </template>
+              <v-list-item-title class="text-caption font-weight-bold text-accent-light uppercase">
+                {{ anio }}
+              </v-list-item-title>
+              <template v-slot:append>
+                <v-icon size="14" color="accent" class="opacity-30">mdi-chevron-right</v-icon>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <v-btn
+      v-if="authStore.estaAutenticado"
+      block
+      height="34"
+      variant="text"
+      rounded="xl"
+      class="mt-2 font-weight-bold logout-btn"
+      prepend-icon="mdi-logout"
+      @click="handleLogout"
+    >
+      Cerrar sesión
+    </v-btn>
+
     <!-- Bottom Actions -->
     <!-- <v-btn
       block
@@ -97,23 +140,13 @@
       rounded="xl"
       class="search-btn font-weight-black text-primary letter-spacing-1 mt-auto"
       prepend-icon="mdi-magnify"
+      to="/"
     >
       BUSCAR EN EL ARCHIVO
     </v-btn> -->
 
     <!-- Logout -->
-    <v-btn
-      v-if="authStore.estaAutenticado"
-      block
-      height="44"
-      variant="text"
-      rounded="xl"
-      class="mt-3 font-weight-bold logout-btn"
-      prepend-icon="mdi-logout"
-      @click="handleLogout"
-    >
-      Cerrar sesión
-    </v-btn>
+    
   </div>
 </template>
 
@@ -121,19 +154,26 @@
 import { useStudentStore } from '@/stores/student'
 import { useAuthStore } from '@/stores/auth'
 import { useAutenticadorInvestigador } from '~/composables/domain/AutenticadorInvestigador'
-import { useRoute } from 'vue-router/auto'
+import { useRoute, useRouter } from 'vue-router'
 
 const store = useStudentStore()
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const { cerrarSesion } = useAutenticadorInvestigador()
 
 const isActive = (path: string) => route.path === path
+const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
+
+const navegarAlAnio = (anio: string) => {
+  router.push({ path: '/archivo', query: { anio } })
+}
 
 const menuItems = [
   { title: 'Biblioteca Personal', icon: 'mdi-book-open-outline', value: 'library', to: '/' },
-  { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
-  { title: 'Notas de Investigación', icon: 'mdi-notebook-edit-outline', value: 'notes', to: '/notes' },
+  // { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
+  // { title: 'Explorar Archivo', icon: 'mdi-archive-eye-outline', value: 'archive', to: '/archivo' },
+  { title: 'Glosario Petrolero', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
 ]
 
 const handleLogout = async () => {
@@ -191,18 +231,27 @@ const handleLogout = async () => {
   opacity: 0 !important;
 }
 
-.search-btn {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.academic-panels :deep(.v-expansion-panel-title) {
+  min-height: 48px !important;
+  padding: 0 12px !important;
 }
 
-.logout-btn {
-  color: rgba(199, 183, 163, 0.6) !important;
+.academic-panels :deep(.v-expansion-panel-title__overlay) {
+  opacity: 0 !important;
+}
+
+.year-item {
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.logout-btn:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
-  background-color: rgba(255, 255, 255, 0.05);
+.year-item:hover {
+  background-color: rgba(199, 183, 163, 0.1) !important;
+  transform: translateX(5px);
+}
+
+.academic-panels :deep(.v-expansion-panel-text__wrapper) {
+  padding: 8px 0 0 12px !important;
 }
 
 .letter-spacing-1 {
