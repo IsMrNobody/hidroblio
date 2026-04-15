@@ -22,7 +22,9 @@ export interface Articulo {
   contenido: string
   anio: string
   fotoUrl?: string // Portada
+  fotoPublicId?: string // Cloudinary public_id para la portada
   articuloFotoUrl?: string // Imagen interna del artículo
+  articuloFotoPublicId?: string // Cloudinary public_id para la imagen interna
   documentoUrl?: string
   nombreDocumento?: string
   createdAt?: any
@@ -89,13 +91,31 @@ export const useGestorArticulos = () => {
   }
 
   /**
-   * Eliminar un artículo de la base de datos
+   * Eliminar un artículo de la base de datos y sus imágenes asociadas en Cloudinary
    */
   const eliminarArticulo = async (articulo: Articulo) => {
     if (!articulo.id) return
 
     try {
-      // Solo eliminamos el registro de Firestore (los archivos estan en Cloudinary/URLs externas)
+      // 1. Eliminar imágenes de Cloudinary si existen
+      const borrarImagen = async (publicId?: string) => {
+        if (!publicId) return
+        try {
+          await $fetch('/api/cloudinary/delete', {
+            method: 'POST',
+            body: { publicId }
+          })
+        } catch (err) {
+          console.error(`No se pudo eliminar la imagen ${publicId} de Cloudinary:`, err)
+        }
+      }
+
+      await Promise.all([
+        borrarImagen(articulo.fotoPublicId),
+        borrarImagen(articulo.articuloFotoPublicId)
+      ])
+
+      // 2. Eliminar el registro de Firestore
       await deleteDoc(doc($db, 'articulos', articulo.id))
 
       // Invalidar cache para forzar refresco

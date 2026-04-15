@@ -2,12 +2,12 @@
 <template>
   <div class="sidebar-content d-flex flex-column fill-height pa-6">
     <!-- Brand Logo -->
-    <div class="d-flex align-center mb-10">
+    <NuxtLink to="/" class="d-flex align-center mb-10 text-decoration-none brand-link">
       <v-avatar color="white" rounded="lg" size="44" class="mr-3 elevation-2">
         <v-icon color="primary" size="24">mdi-book-open-variant</v-icon>
       </v-avatar>
       <span class="text-h6 font-weight-black text-white letter-spacing-1 font-display">HIDROBIBLIO</span>
-    </div>
+    </NuxtLink>
 
     <!-- Student Info (Autenticado) -->
     <v-card 
@@ -170,7 +170,7 @@ const navegarAlAnio = (anio: string) => {
 }
 
 const menuItems = [
-  { title: 'Biblioteca Personal', icon: 'mdi-book-open-outline', value: 'library', to: '/' },
+  { title: 'Biblioteca Personal', icon: 'mdi-book-open-outline', value: 'library', to: '/biblioteca' },
   // { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
   // { title: 'Explorar Archivo', icon: 'mdi-archive-eye-outline', value: 'archive', to: '/archivo' },
   { title: 'Glosario Petrolero', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
@@ -256,6 +256,14 @@ const handleLogout = async () => {
 
 .letter-spacing-1 {
   letter-spacing: 1.5px !important;
+}
+
+.brand-link {
+  transition: opacity 0.3s ease;
+}
+
+.brand-link:hover {
+  opacity: 0.8;
 }
 
 .uppercase {

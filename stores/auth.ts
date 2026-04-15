@@ -48,8 +48,10 @@ export const useAuthStore = defineStore('auth', {
         this.usuario = null
         this.estaAutenticado = false
       }
-      this.cargando = false
       this.errorAuth = null
+    },
+    setCargando(estado: boolean) {
+      this.cargando = estado
     },
     setError(mensaje: string) {
       this.errorAuth = mensaje

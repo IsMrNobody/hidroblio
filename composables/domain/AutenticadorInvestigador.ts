@@ -15,17 +15,19 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { useAuthStore } from '~/stores/auth'
 import { useStudentStore } from '~/stores/student'
+import { useFavoritesStore } from '~/stores/favorites'
 
 export const useAutenticadorInvestigador = () => {
   const { $auth, $db } = useNuxtApp()
   const authStore = useAuthStore()
   const studentStore = useStudentStore()
+  const favoritesStore = useFavoritesStore()
 
   /**
    * Registra un nuevo investigador con email y contraseña.
    * Crea el documento de perfil en Firestore automáticamente.
    */
-  const registrar = async (email: string, password: string, nombre: string) => {
+  const registrar = async (email: string, password: string, nombre: string, year: string, section: string) => {
     authStore.limpiarError()
     try {
       const credencial = await createUserWithEmailAndPassword($auth, email, password)
@@ -34,14 +36,14 @@ export const useAutenticadorInvestigador = () => {
       await updateProfile(credencial.user, { displayName: nombre })
 
       // Crear documento de perfil en Firestore
-      await crearPerfilFirestore(credencial.user, nombre)
+      await crearPerfilFirestore(credencial.user, nombre, year, section)
 
       // Actualizar store local
       authStore.setUsuario(credencial.user)
       studentStore.updateProfile({
         name: nombre,
-        year: studentStore.profile.year,
-        section: studentStore.profile.section,
+        year: year,
+        section: section,
       })
 
       return credencial.user
@@ -113,8 +115,10 @@ export const useAutenticadorInvestigador = () => {
     try {
       await signOut($auth)
       authStore.setUsuario(null)
-      // Resetear store del estudiante
+      // Resetear stores
       studentStore.$reset()
+      favoritesStore.reset()
+      navigateTo('/')
     } catch (error: any) {
       console.error('Error al cerrar sesión:', error)
     }
@@ -122,13 +126,13 @@ export const useAutenticadorInvestigador = () => {
 
   // ─── Funciones internas ───────────────────────────────────
 
-  const crearPerfilFirestore = async (user: User, nombre: string) => {
+  const crearPerfilFirestore = async (user: User, nombre: string, year = '1ro "U"', section = 'A') => {
     const docRef = doc($db, 'estudiantes', user.uid)
     await setDoc(docRef, {
       name: nombre,
       email: user.email,
-      year: '1ro "U"',
-      section: 'A',
+      year: year,
+      section: section,
       avatar: 'mdi-account-school',
       level: 1,
       xp: 0,

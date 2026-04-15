@@ -156,7 +156,7 @@
     </v-expand-transition>
 
     <!-- Estadísticas -->
-    <v-card class="pa-6 rounded-xl elevation-1 border-accent" color="white">
+    <!-- <v-card class="pa-6 rounded-xl elevation-1 border-accent" color="white">
       <h3 class="text-h6 font-weight-bold text-primary mb-4 font-display">Estadísticas</h3>
       <v-row>
         <v-col cols="6" md="3">
@@ -184,7 +184,7 @@
           </div>
         </v-col>
       </v-row>
-    </v-card>
+    </v-card> -->
   </div>
 </template>
 

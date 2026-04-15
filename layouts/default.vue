@@ -32,6 +32,7 @@
         class="mr-2"
         @click="openSearch"
       ></v-btn>
+      <v-btn icon="mdi-bookmark-outline" to="/favoritos" color="secondary" size="small"></v-btn>
       <v-btn icon="mdi-bell-outline" variant="text" color="secondary" size="small"></v-btn>
     </v-app-bar>
 
@@ -55,13 +56,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useAuthStore } from '~/stores/auth'
 import { useDisplay } from 'vuetify'
 import NavigationAcademicSearchDialog from '~/components/navigation/AcademicSearchDialog.vue'
 
 const { mobile } = useDisplay()
-const drawer = ref(!mobile.value)
+const drawer = ref<boolean | undefined>(undefined)
 const showSearch = ref(false)
+
+onMounted(() => {
+  // Inicializamos el drawer después del montaje para evitar errores de hidratación
+  // que pueden "congelar" la interactividad del componente.
+  drawer.value = !mobile.value
+})
 
 const openSearch = () => {
   showSearch.value = true

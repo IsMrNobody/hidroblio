@@ -27,7 +27,11 @@ export const useFavoritesStore = defineStore('favorites', {
       const authStore = useAuthStore()
       const { obtenerArticuloPorId } = useGestorArticulos()
 
-      if (!authStore.usuario?.uid) return
+      if (!authStore.usuario?.uid) {
+        this.favorites = []
+        this.initialized = false
+        return
+      }
       
       this.loading = true
       try {
@@ -41,6 +45,7 @@ export const useFavoritesStore = defineStore('favorites', {
         
         if (vinculaciones.length === 0) {
           this.favorites = []
+          this.initialized = true
           return
         }
 
@@ -54,6 +59,11 @@ export const useFavoritesStore = defineStore('favorites', {
       } finally {
         this.loading = false
       }
+    },
+    reset() {
+      this.favorites = []
+      this.initialized = false
+      this.loading = false
     },
 
     async toggleFavorite(articuloId: string) {

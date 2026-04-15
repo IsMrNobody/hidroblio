@@ -6,13 +6,13 @@
         <v-icon color="primary" class="mr-3">mdi-book-open-page-variant-outline</v-icon>
         <h2 class="text-h5 font-weight-bold text-primary font-display">Añadidos Recientemente</h2>
       </div>
-      <v-btn variant="text" color="primary" class="text-caption font-weight-black letter-spacing-1">
-        VER TODO EL ARCHIVO
+      <v-btn variant="text" color="primary" to="/favoritos" class="text-caption font-weight-black letter-spacing-1">
+        VER GUARDADOS
       </v-btn>
     </div>
 
     <v-row v-if="!cargando" class="horizontal-scroll-row">
-      <v-col v-for="art in articulos" :key="art.id" cols="12" sm="6" md="4" lg="3">
+      <v-col v-for="art in articulos" :key="art.id" cols="12" sm="6" md="4" lg="2">
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
@@ -20,20 +20,21 @@
             :class="{ 'card-hover': isHovering }"
             @click="router.push(`/articulos/${art.id}`)"
           >
-            <v-img :src="art.fotoUrl || '/images/hero.png'" height="340" cover class="align-end">
+            <v-img :src="art.fotoUrl || '/images/hero.png'" height="220" cover class="align-end">
+              <v-btn 
+                :icon="favoritesStore.isFavorite(art.id!) ? 'mdi-bookmark' : 'mdi-bookmark-outline'" 
+                :color="favoritesStore.isFavorite(art.id!) ? 'primary' : 'accent'" 
+                variant="flat" 
+                size="small" 
+                rounded="lg"
+                class="position-absolute top-0 right-0 ma-4 z-10 bookmark-btn"
+                :loading="guardandoId === art.id"
+                @click.stop="handleGuardar(art.id!)"
+              ></v-btn>
+              
               <div class="card-gradient"></div>
               <div class="pa-6 position-relative z-1 text-left">
-                <span class="text-overline font-weight-black text-accent-light d-block mb-1">{{ art.anio }}</span>
-                <h3 class="text-h6 font-weight-bold text-white leading-tight mb-2">{{ art.titulo }}</h3>
-                <v-btn 
-                  :icon="favoritesStore.isFavorite(art.id!) ? 'mdi-bookmark' : 'mdi-bookmark-outline'" 
-                  :color="favoritesStore.isFavorite(art.id!) ? 'primary' : 'accent'" 
-                  variant="flat" 
-                  size="small" 
-                  rounded="lg"
-                  :loading="guardandoId === art.id"
-                  @click.stop="handleGuardar(art.id!)"
-                ></v-btn>
+                <p class="text-h7 font-weight-bold text-white leading-tight mb-2">{{ art.titulo }}</p>
               </div>
             </v-img>
           </v-card>
@@ -145,5 +146,17 @@ onMounted(() => {
 
 .text-accent-light {
   color: #C7B7A3;
+}
+
+.z-10 {
+  z-index: 10 !important;
+}
+
+.bookmark-btn {
+  backdrop-filter: blur(4px);
+}
+
+.bookmark-btn:hover {
+  transform: scale(1.1);
 }
 </style>

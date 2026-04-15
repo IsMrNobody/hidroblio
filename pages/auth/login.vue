@@ -129,7 +129,7 @@ const handleLogin = async () => {
   cargando.value = true
   try {
     await iniciarSesion(email.value, password.value)
-    navigateTo('/')
+    navigateTo('/biblioteca')
   } catch {
     // Error ya manejado en el composable
   } finally {
@@ -141,7 +141,7 @@ const handleGoogleLogin = async () => {
   cargandoGoogle.value = true
   try {
     await iniciarSesionConGoogle()
-    navigateTo('/')
+    navigateTo('/biblioteca')
   } catch {
     // Error ya manejado en el composable
   } finally {

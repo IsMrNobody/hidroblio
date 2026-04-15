@@ -30,9 +30,8 @@ export default defineNuxtPlugin(async () => {
         }
       }
       
+      authStore.setCargando(false)
       resolve()
-      // No necesitamos desuscribirnos aquí si queremos seguir observando cambios de sesión,
-      // pero onAuthStateChanged seguirá escuchando por sí mismo.
     })
   })
 })

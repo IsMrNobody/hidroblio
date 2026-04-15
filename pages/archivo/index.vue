@@ -28,7 +28,7 @@
           ARCHIVO GENERAL HIDROBIBLIO
         </v-chip>
         
-        <h1 class="text-h2 font-weight-black text-white font-display leading-tight mb-4">
+        <h1 class="text-h3 font-weight-black text-white font-display leading-tight mb-4">
           {{ anioSeleccionado ? `Investigaciones de ${anioSeleccionado}` : 'Explorador de Conocimiento' }}
         </h1>
         <p class="text-h6 text-white opacity-80 max-w-2xl mx-auto font-weight-medium">

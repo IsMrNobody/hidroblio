@@ -183,7 +183,9 @@ const form = reactive({
   contenido: '',
   anio: '',
   fotoUrl: '',
+  fotoPublicId: '',
   articuloFotoUrl: '',
+  articuloFotoPublicId: '',
   documentoUrl: '',
   nombreDocumento: ''
 })
@@ -202,7 +204,9 @@ watch(() => props.articuloAEditar, (nuevoArticulo) => {
       contenido: nuevoArticulo.contenido || '',
       anio: nuevoArticulo.anio || '',
       fotoUrl: nuevoArticulo.fotoUrl || '',
+      fotoPublicId: nuevoArticulo.fotoPublicId || '',
       articuloFotoUrl: nuevoArticulo.articuloFotoUrl || '',
+      articuloFotoPublicId: nuevoArticulo.articuloFotoPublicId || '',
       documentoUrl: nuevoArticulo.documentoUrl || '',
       nombreDocumento: nuevoArticulo.nombreDocumento || ''
     })
@@ -214,7 +218,9 @@ watch(() => props.articuloAEditar, (nuevoArticulo) => {
       contenido: '',
       anio: '',
       fotoUrl: '',
+      fotoPublicId: '',
       articuloFotoUrl: '',
+      articuloFotoPublicId: '',
       documentoUrl: '',
       nombreDocumento: ''
     })
@@ -256,7 +262,13 @@ const subirACloudinary = async (file: File) => {
       body: formData
     })
     const data = await res.json()
-    return data.secure_url || null
+    if (data.secure_url) {
+      return {
+        url: data.secure_url,
+        publicId: data.public_id
+      }
+    }
+    return null
   } catch (error) {
     console.error('Error al subir a Cloudinary:', error)
     return null
@@ -275,15 +287,21 @@ const guardar = async () => {
     // Subir portada si hay una nueva
     const filePortada = Array.isArray(archivoPortada.value) ? archivoPortada.value[0] : (archivoPortada.value as any);
     if (filePortada && filePortada instanceof File) {
-      const url = await subirACloudinary(filePortada)
-      if (url) form.fotoUrl = url
+      const res = await subirACloudinary(filePortada)
+      if (res) {
+        form.fotoUrl = res.url
+        form.fotoPublicId = res.publicId
+      }
     }
 
     // Subir imagen de artículo si hay una nueva
     const fileArticulo = Array.isArray(archivoArticulo.value) ? archivoArticulo.value[0] : (archivoArticulo.value as any);
     if (fileArticulo && fileArticulo instanceof File) {
-      const url = await subirACloudinary(fileArticulo)
-      if (url) form.articuloFotoUrl = url
+      const res = await subirACloudinary(fileArticulo)
+      if (res) {
+        form.articuloFotoUrl = res.url
+        form.articuloFotoPublicId = res.publicId
+      }
     }
 
     if (props.articuloAEditar?.id) {
