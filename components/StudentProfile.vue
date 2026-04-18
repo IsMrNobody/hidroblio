@@ -9,29 +9,55 @@
       <span class="text-h6 font-weight-black text-white letter-spacing-1 font-display">HIDROBIBLIO</span>
     </div>
 
-    <!-- Student Info -->
+    <!-- Student Info (Autenticado) -->
     <v-card 
+      v-if="authStore.estaAutenticado"
       class="profile-section d-flex align-center pa-4 rounded-xl mb-8 cursor-pointer" 
       to="/profile"
       variant="text"
       :ripple="false"
     >
       <v-avatar size="48" class="mr-4 bg-accent">
-        <v-img src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortFlat&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=Blue03&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"></v-img>
+        <v-img 
+          v-if="authStore.usuario?.photoURL" 
+          :src="authStore.usuario.photoURL"
+        ></v-img>
+        <span v-else class="text-h6 font-weight-bold text-primary">{{ authStore.iniciales }}</span>
       </v-avatar>
       <div class="overflow-hidden text-left">
-        <h3 class="text-subtitle-1 font-weight-bold text-white mb-0 text-truncate">{{ store.profile.name }}</h3>
+        <h3 class="text-subtitle-1 font-weight-bold text-white mb-0 text-truncate">{{ authStore.nombreMostrar }}</h3>
         <p class="text-caption text-accent-light opacity-70 mb-0 font-weight-bold uppercase">
-          {{ store.profile.year }} - SECTION {{ store.profile.section }}
+          {{ store.profile.year }} - SECCIÓN {{ store.profile.section }}
         </p>
       </div>
     </v-card>
 
-    <!-- Gamification: Level -->
-    <div class="level-section mb-10 px-2">
+    <!-- Invitado (No autenticado) -->
+    <v-card 
+      v-else
+      class="profile-section d-flex align-center pa-4 rounded-xl mb-8 cursor-pointer" 
+      to="/auth/login"
+      variant="text"
+      :ripple="false"
+    >
+      <v-avatar size="48" class="mr-4" color="rgba(255,255,255,0.1)">
+        <v-icon color="accent" size="24">mdi-account-circle-outline</v-icon>
+      </v-avatar>
+      <div class="overflow-hidden text-left">
+        <h3 class="text-subtitle-1 font-weight-bold text-white mb-0">Iniciar sesión</h3>
+        <p class="text-caption text-accent-light opacity-70 mb-0">
+          Accede a tu cuenta
+        </p>
+      </div>
+      <v-spacer></v-spacer>
+      <v-icon color="accent" size="18">mdi-chevron-right</v-icon>
+    </v-card>
+
+    <!-- Gamification: Level (solo autenticado) -->
+    <div v-if="authStore.estaAutenticado" class="level-section mb-10 px-2">
       <div class="d-flex justify-space-between align-center mb-2">
-        <span class="text-caption font-weight-black text-white letter-spacing-1">LEVEL {{ store.profile.level }}</span>
-        <span class="text-caption text-accent-light opacity-60">{{ store.progressPercent }}% to Level {{ store.profile.level + 1 }}</span>
+        <span class="text-caption font-weight-black text-white letter-spacing-1">NIVEL {{ store.profile.level }}</span>
+        <span class="text-caption text-accent-light opacity-60">{{ store.progressPercent }}% para Nivel {{ store.profile.level + 1 }}</span>
       </div>
       <v-progress-linear
         :model-value="store.progressPercent"
@@ -53,7 +79,6 @@
         active-class="nav-item-active"
         :active="false" 
       >
-        <!-- Forzamos active=false nativo para manejar el estilo manualmente o usamos active-class de router -->
         <template v-slot:prepend>
           <v-icon :color="isActive(item.to) ? 'white' : 'accent'" class="mr-4">{{ item.icon }}</v-icon>
         </template>
@@ -63,7 +88,7 @@
       </v-list-item>
     </v-list>
 
-    <!-- Bottom Action: Search -->
+    <!-- Bottom Actions -->
     <v-btn
       block
       height="56"
@@ -75,25 +100,46 @@
     >
       BUSCAR EN EL ARCHIVO
     </v-btn>
+
+    <!-- Logout -->
+    <v-btn
+      v-if="authStore.estaAutenticado"
+      block
+      height="44"
+      variant="text"
+      rounded="xl"
+      class="mt-3 font-weight-bold logout-btn"
+      prepend-icon="mdi-logout"
+      @click="handleLogout"
+    >
+      Cerrar sesión
+    </v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useStudentStore } from '@/stores/student'
+import { useAuthStore } from '@/stores/auth'
+import { useAutenticadorInvestigador } from '~/composables/domain/AutenticadorInvestigador'
 import { useRoute } from 'vue-router/auto'
 
 const store = useStudentStore()
+const authStore = useAuthStore()
 const route = useRoute()
+const { cerrarSesion } = useAutenticadorInvestigador()
 
-// Mapeo simple para activar el item del menú basado en la ruta actual
 const isActive = (path: string) => route.path === path
 
 const menuItems = [
   { title: 'Biblioteca Personal', icon: 'mdi-book-open-outline', value: 'library', to: '/' },
-  { title: 'Salón Académico', icon: 'mdi-school-outline', value: 'hall', to: '/hall' },
+  { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
   { title: 'Notas de Investigación', icon: 'mdi-notebook-edit-outline', value: 'notes', to: '/notes' },
-  //{ title: 'Marcadores', icon: 'mdi-bookmark-outline', value: 'bookmarks', to: '/bookmarks' },
 ]
+
+const handleLogout = async () => {
+  await cerrarSesion()
+  navigateTo('/auth/login')
+}
 </script>
 
 <style scoped>
@@ -108,6 +154,11 @@ const menuItems = [
 .profile-section {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(199, 183, 163, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.profile-section:hover {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .text-accent-light {
@@ -142,6 +193,16 @@ const menuItems = [
 
 .search-btn {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn {
+  color: rgba(199, 183, 163, 0.6) !important;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .letter-spacing-1 {

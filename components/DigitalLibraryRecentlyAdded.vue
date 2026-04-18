@@ -11,71 +11,103 @@
       </v-btn>
     </div>
 
-    <v-row class="horizontal-scroll-row">
-      <v-col v-for="(book, i) in recentBooks" :key="i" cols="12" sm="6" md="4" lg="3">
+    <v-row v-if="!cargando" class="horizontal-scroll-row">
+      <v-col v-for="art in articulos" :key="art.id" cols="12" sm="6" md="4" lg="3">
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
-            class="book-dashboard-card rounded-xl overflow-hidden elevation-0"
+            class="book-dashboard-card rounded-xl overflow-hidden elevation-0 cursor-pointer"
             :class="{ 'card-hover': isHovering }"
+            @click="router.push(`/articulos/${art.id}`)"
           >
-            <v-img :src="book.image" height="340" cover class="align-end">
+            <v-img :src="art.fotoUrl || '/images/hero.png'" height="340" cover class="align-end">
               <div class="card-gradient"></div>
-              <div class="pa-6 position-relative z-1">
-                <span class="text-overline font-weight-black text-accent-light d-block mb-1">{{ book.type }}</span>
-                <h3 class="text-h6 font-weight-bold text-white leading-tight">{{ book.title }}</h3>
+              <div class="pa-6 position-relative z-1 text-left">
+                <span class="text-overline font-weight-black text-accent-light d-block mb-1">{{ art.anio }}</span>
+                <h3 class="text-h6 font-weight-bold text-white leading-tight mb-2">{{ art.titulo }}</h3>
+                <v-btn 
+                  icon="mdi-bookmark-plus-outline" 
+                  color="accent" 
+                  variant="flat" 
+                  size="small" 
+                  rounded="lg"
+                  :loading="guardandoId === art.id"
+                  @click.stop="handleGuardar(art.id)"
+                ></v-btn>
               </div>
             </v-img>
-            
-            <div class="pa-4 d-flex align-center justify-space-between">
-              <span class="text-caption font-weight-black text-secondary opacity-60 uppercase">{{ book.module }}</span>
-              <v-chip v-if="book.isNew" color="success" size="x-small" label class="font-weight-black">NEW</v-chip>
-              <span v-else class="text-caption font-weight-black text-secondary opacity-60 uppercase">{{ book.dept }}</span>
-            </div>
           </v-card>
         </v-hover>
       </v-col>
+      <v-col v-if="articulos.length === 0" cols="12" class="text-center py-8">
+        <p class="text-subtitle-1 text-secondary opacity-50">No hay recursos recientes para tu año académico.</p>
+      </v-col>
     </v-row>
+    <div v-else class="d-flex justify-center py-12">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
+
+    <!-- Feedback Snackbar -->
+    <v-snackbar v-model="snackbar" color="accent" rounded="pill" location="bottom right">
+      <div class="d-flex align-center">
+        <v-icon start>mdi-check-circle</v-icon>
+        <span class="font-weight-bold">{{ snackbarText }}</span>
+      </div>
+    </v-snackbar>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
-const { mobile } = useDisplay()
+import { useStudentStore } from '~/stores/student'
+import { useGestorArticulos, type Articulo } from '~/composables/domain/GestorArticulos'
+import { useGestorColecciones } from '~/composables/domain/GestorColecciones'
 
-const recentBooks = [
-  { 
-    title: 'Técnicas Avanzadas de Perforación', 
-    type: 'LIBRO DE TEXTO', 
-    module: 'MÓDULO 4.2', 
-    isNew: true, 
-    image: 'https://images.pexels.com/photos/14377364/pexels-photo-14377364.jpeg' 
-  },
-  { 
-    title: 'Guía de Mapeo Subsuperficial', 
-    type: 'DOCUMENTO BLANCO', 
-    module: 'DEPTO. GEOLOGÍA', 
-    isNew: false, 
-    dept: 'DEPTO. GEOLOGÍA',
-    image: 'https://images.pexels.com/photos/9630188/pexels-photo-9630188.jpeg' 
-  },
-  { 
-    title: 'Procedimientos Operativos Estándar de Mantenimiento de Plataformas', 
-    type: 'MANUAL TÉCNICO', 
-    module: 'MANUAL TÉCNICO', 
-    isNew: false, 
-    dept: 'MANTENIMIENTO',
-    image: 'https://images.pexels.com/photos/11718060/pexels-photo-11718060.png' 
-  },
-  { 
-    title: 'Simulación de Yacimientos 2024', 
-    type: 'ARCHIVO', 
-    module: 'MÓDULO 5.1', 
-    isNew: false, 
-    dept: 'INGENIERÍA',
-    image: 'https://images.pexels.com/photos/16862261/pexels-photo-16862261.jpeg' 
+const { mobile } = useDisplay()
+const router = useRouter()
+const store = useStudentStore()
+const { obtenerArticulos } = useGestorArticulos()
+const { guardarArticulo } = useGestorColecciones()
+
+const articulos = ref<Articulo[]>([])
+const cargando = ref(true)
+const snackbar = ref(false)
+const snackbarText = ref('Artículo guardado en tu biblioteca')
+const guardandoId = ref('')
+
+const cargarArticulosRecientes = async () => {
+  cargando.value = true
+  try {
+    // Filtrar por el año del estudiante
+    const anio = store.profile.year
+    articulos.value = await obtenerArticulos(anio)
+  } catch (error) {
+    console.error('Error al cargar artículos para el dashboard:', error)
+  } finally {
+    cargando.value = false
   }
-]
+}
+
+const handleGuardar = async (id: string) => {
+  guardandoId.value = id
+  try {
+    const res = await guardarArticulo(id)
+    if (res && typeof res !== 'boolean') {
+      snackbarText.value = res.saved ? 'Artículo añadido a tus guardados' : 'Artículo eliminado de tus guardados'
+      snackbar.value = true
+    }
+  } catch (error) {
+    console.error('Error al guardar artículo:', error)
+  } finally {
+    guardandoId.value = ''
+  }
+}
+
+onMounted(() => {
+  cargarArticulosRecientes()
+})
 </script>
 
 <style scoped>

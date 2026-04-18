@@ -14,7 +14,8 @@
 <script setup lang="ts">
 // Page meta para usar el layout default con sidebar
 definePageMeta({
-  layout: 'perfil'
+  layout: 'default',
+  middleware: ['auth']
 })
 </script>
 

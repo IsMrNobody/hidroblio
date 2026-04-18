@@ -1,74 +1,101 @@
 <!-- components/DigitalLibraryCollections.vue -->
 <template>
-  <div>
-    <div :class="['d-flex align-center justify-space-between mb-8', mobile ? 'flex-column align-start gap-3' : '']">
+  <div class="mb-12">
+    <div class="d-flex align-center justify-space-between mb-8">
       <div class="d-flex align-center">
-        <v-icon color="primary" class="mr-3">mdi-folder-multiple-outline</v-icon>
-        <h2 class="text-h5 font-weight-bold text-primary font-display">Mis Colecciones</h2>
+        <v-icon color="primary" class="mr-3">mdi-bookmark-multiple-outline</v-icon>
+        <h2 class="text-h5 font-weight-bold text-primary font-display">Mis Guardados</h2>
       </div>
-      <v-btn variant="flat" color="accent" size="small" rounded="lg" class="px-4 font-weight-black text-caption" prepend-icon="mdi-plus">
-        NUEVA CARPETA
-      </v-btn>
     </div>
 
-    <v-row>
-      <v-col v-for="(collection, i) in collections" :key="i" cols="12" md="4">
-        <v-card class="collection-mini-card pa-4 rounded-xl elevation-0" color="rgba(255,255,255,0.4)" border="accent">
+    <!-- Lista de artículos guardados -->
+    <v-row v-if="!favoritesStore.loading && favoritesStore.favorites.length > 0">
+      <v-col v-for="art in favoritesStore.favorites" :key="art.id" cols="12" md="6" lg="4">
+        <v-card 
+          class="favorite-card pa-3 rounded-xl elevation-0" 
+          @click="router.push(`/articulos/${art.id}`)"
+        >
           <div class="d-flex align-center">
-            <v-avatar rounded="lg" size="64" :color="collection.color" class="mr-6 elevation-1">
-              <v-icon color="white" size="32">{{ collection.icon }}</v-icon>
-            </v-avatar>
+            <v-img 
+              :src="art.fotoUrl || '/images/hero.png'" 
+              width="80" 
+              height="80" 
+              cover 
+              class="rounded-lg mr-4 bg-background"
+            />
+            <div class="flex-grow-1 overflow-hidden text-left">
+              <h4 class="text-subtitle-1 font-weight-bold text-primary mb-0 text-truncate">
+                {{ art.titulo }}
+              </h4>
+              <span class="text-caption text-secondary uppercase font-weight-black">
+                {{ art.anio }}
+              </span>
+            </div>
             
-            <div class="flex-grow-1 overflow-hidden">
-              <h4 class="text-h6 font-weight-bold text-primary mb-1 text-truncate">{{ collection.title }}</h4>
-              <p class="text-caption text-secondary font-weight-medium mb-2 italic">
-                {{ collection.count }} documentos • Última lectura {{ collection.lastRead }}
-              </p>
-              
-              <div class="d-flex gap-2">
-                <v-btn icon="mdi-share-variant-outline" variant="text" size="x-small" color="secondary"></v-btn>
-                <v-btn icon="mdi-download-outline" variant="text" size="x-small" color="secondary"></v-btn>
-                <v-btn v-if="collection.locked" icon="mdi-lock-outline" variant="text" size="x-small" color="secondary"></v-btn>
-                <v-btn v-else icon="mdi-pencil-outline" variant="text" size="x-small" color="secondary"></v-btn>
-              </div>
+            <div class="d-flex flex-column gap-1">
+              <v-btn 
+                icon="mdi-bookmark-remove-outline" 
+                variant="text" 
+                color="error"
+                size="small"
+                @click.stop="handleRemove(art.id!)"
+              ></v-btn>
+              <v-btn 
+                icon="mdi-chevron-right" 
+                variant="text" 
+                color="primary"
+                size="small"
+              ></v-btn>
             </div>
           </div>
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Estado vacío -->
+    <div v-else-if="!favoritesStore.loading" class="text-center py-12 bg-white rounded-xl border-dashed">
+      <v-icon size="64" color="secondary" class="opacity-20 mb-4">mdi-bookmark-plus-outline</v-icon>
+      <p class="text-subtitle-1 text-secondary font-weight-medium px-6">
+        Tu lista de favoritos está vacía. Guarda artículos para verlos aquí.
+      </p>
+    </div>
+
+    <!-- Cargando -->
+    <div v-else class="d-flex justify-center py-12">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
+
+    <!-- Snackbar local de feedback -->
+    <v-snackbar v-model="snackbar" color="primary" rounded="pill" location="bottom left">
+      <div class="d-flex align-center">
+        <v-icon start>mdi-bookmark-off-outline</v-icon>
+        <span class="font-weight-bold">Artículo eliminado de tus guardados</span>
+      </div>
+    </v-snackbar>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
-const { mobile } = useDisplay()
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useFavoritesStore } from '~/stores/favorites'
 
-const collections = [
-  { 
-    title: 'Preparación Campo Geológico', 
-    count: 14, 
-    lastRead: 'hace 2h', 
-    icon: 'mdi-image-outline', 
-    color: 'secondary',
-    locked: false
-  },
-  { 
-    title: 'Informes Lab Sem. II', 
-    count: 8, 
-    lastRead: 'Ayer', 
-    icon: 'mdi-microscope', 
-    color: 'accent',
-    locked: true
-  },
-  { 
-    title: 'Recursos para Tesis', 
-    count: 32, 
-    lastRead: 'Compartido (4)', 
-    icon: 'mdi-account-group-outline', 
-    color: 'primary',
-    locked: false
+const router = useRouter()
+const favoritesStore = useFavoritesStore()
+const snackbar = ref(false)
+
+const handleRemove = async (id: string) => {
+  const res = await favoritesStore.toggleFavorite(id)
+  if (res?.success && !res.saved) {
+    snackbar.value = true
   }
-]
+}
+
+onMounted(() => {
+  if (!favoritesStore.initialized) {
+    favoritesStore.fetchFavorites()
+  }
+})
 </script>
 
 <style scoped>
@@ -76,21 +103,25 @@ const collections = [
   font-family: 'Playfair Display', serif !important;
 }
 
-.collection-mini-card {
-  border: 1px solid rgba(var(--v-theme-accent), 0.3) !important;
+.favorite-card {
+  background-color: rgba(255, 255, 255, 0.6) !important;
   transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(var(--v-theme-accent), 0.2) !important;
 }
 
-.collection-mini-card:hover {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  transform: scale(1.02);
+.favorite-card:hover {
+  background-color: white !important;
+  transform: translateX(5px);
+  border-color: rgb(var(--v-theme-primary)) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
 }
 
-.gap-2 {
-  gap: 8px;
+.border-dashed {
+  border: 2px dashed rgba(var(--v-theme-secondary), 0.2) !important;
 }
 
-.italic {
-  font-style: italic;
+.uppercase {
+  text-transform: uppercase;
 }
 </style>

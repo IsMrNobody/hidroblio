@@ -16,7 +16,7 @@
           <v-icon>mdi-bell-outline</v-icon>
         </v-badge>
       </v-btn>
-      <v-btn icon="mdi-logout" color="white" variant="text"></v-btn>
+      <v-btn icon="mdi-logout" color="white" variant="text" @click="handleLogout"></v-btn>
     </v-app-bar>
 
     <!-- Panel Lateral (Perfil del Estudiante) -->
@@ -48,13 +48,16 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useAutenticadorInvestigador } from '~/composables/domain/AutenticadorInvestigador'
 
 const { mdAndUp } = useDisplay()
-const drawer = ref(true) // Controla visibilidad del drawer
+const drawer = ref(true)
+const { cerrarSesion } = useAutenticadorInvestigador()
 
-// En pantallas grandes, drawer siempre visible (true)
-// En pantallas pequeñas, empieza oculto o controlado por usuario
-// (La lógica reactiva de :permanent arriba maneja el comportamiento principal)
+const handleLogout = async () => {
+  await cerrarSesion()
+  navigateTo('/auth/login')
+}
 </script>
 
 <style scoped>
