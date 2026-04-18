@@ -207,7 +207,7 @@ const articuloAEditar = ref<Articulo | null>(null)
 const filtroAnio = ref<string | null>(null)
 const activeTab = ref('articulos')
 
-const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
+const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"', 'General']
 
 const headers = [
   { title: 'RECURSO / ARTÍCULO', align: 'start', key: 'titulo' },

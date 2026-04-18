@@ -103,18 +103,6 @@
               :items="opcionesAnio"
               prepend-inner-icon="mdi-school-outline"
               :rules="[reglas.requerido]"
-              class="mb-1"
-              rounded="xl"
-              bg-color="background"
-            ></v-select>
-
-            <v-select
-              id="register-section"
-              v-model="seccion"
-              label="Sección"
-              :items="opcionesSeccion"
-              prepend-inner-icon="mdi-door-open"
-              :rules="[reglas.requerido]"
               class="mb-8"
               rounded="xl"
               bg-color="background"
@@ -207,7 +195,6 @@ const email = ref('')
 const password = ref('')
 const passwordConfirm = ref('')
 const anio = ref('')
-const seccion = ref('')
 
 const mostrarPassword = ref(false)
 const mostrarPasswordConfirm = ref(false)
@@ -215,7 +202,6 @@ const cargando = ref(false)
 const cargandoGoogle = ref(false)
 
 const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
-const opcionesSeccion = ['A', 'B', 'C', 'U']
 
 const reglas = {
   requerido: (v: string) => !!v || 'Este campo es requerido',
@@ -238,7 +224,7 @@ const handleSubmit = async () => {
 
   cargando.value = true
   try {
-    await registrar(email.value, password.value, nombre.value, anio.value, seccion.value)
+    await registrar(email.value, password.value, nombre.value, anio.value, 'U')
     navigateTo('/biblioteca')
   } catch {
     // Error ya manejado en el composable

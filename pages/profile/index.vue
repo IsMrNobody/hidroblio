@@ -23,7 +23,7 @@
             Nivel {{ store.profile.level }} • {{ store.levelTitle }}
           </p>
           <v-chip color="primary" variant="outlined" class="font-weight-bold">
-            AÑO {{ store.profile.year }} - SECCIÓN {{ store.profile.section }}
+            {{ store.profile.year }}
           </v-chip>
         </div>
         
@@ -67,7 +67,7 @@
                 bg-color="background"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="3">
+            <!-- <v-col cols="12" md="3">
               <v-select
                 v-model="formData.section"
                 :items="['A', 'B', 'C', 'D']"
@@ -76,7 +76,7 @@
                 rounded="xl"
                 bg-color="background"
               ></v-select>
-            </v-col>
+            </v-col> -->
           </v-row>
           
           <div class="d-flex justify-end mt-2">
@@ -217,7 +217,6 @@ const statusType = ref<'success' | 'error'>('success')
 const formData = reactive({
   name: store.profile.name,
   year: store.profile.year,
-  section: store.profile.section,
 })
 
 const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']

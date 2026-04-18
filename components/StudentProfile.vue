@@ -27,7 +27,7 @@
       <div class="overflow-hidden text-left">
         <h3 class="text-subtitle-1 font-weight-bold text-white mb-0 text-truncate">{{ authStore.nombreMostrar }}</h3>
         <p class="text-caption text-accent-light opacity-70 mb-0 font-weight-bold uppercase">
-          {{ store.profile.year }} - SECCIÓN {{ store.profile.section }}
+          {{ store.profile.year }}
         </p>
       </div>
     </v-card>
@@ -54,7 +54,7 @@
     </v-card>
 
     <!-- Gamification: Level (solo autenticado) -->
-    <div v-if="authStore.estaAutenticado" class="level-section mb-10 px-2">
+    <!-- <div v-if="authStore.estaAutenticado" class="level-section mb-10 px-2">
       <div class="d-flex justify-space-between align-center mb-2">
         <span class="text-caption font-weight-black text-white letter-spacing-1">NIVEL {{ store.profile.level }}</span>
         <span class="text-caption text-accent-light opacity-60">{{ store.progressPercent }}% para Nivel {{ store.profile.level + 1 }}</span>
@@ -66,7 +66,7 @@
         rounded
         class="custom-progress"
       ></v-progress-linear>
-    </div>
+    </div> -->
 
     <!-- Main Navigation -->
     <v-list bg-color="transparent" class="nav-list flex-grow-1" density="comfortable">
@@ -170,10 +170,11 @@ const navegarAlAnio = (anio: string) => {
 }
 
 const menuItems = [
-  { title: 'Biblioteca Personal', icon: 'mdi-book-open-outline', value: 'library', to: '/biblioteca' },
+  { title: 'Mi Biblioteca', icon: 'mdi-book-open-outline', value: 'library', to: '/biblioteca' },
+  { title: 'Libros', icon: 'mdi-book-multiple', value: 'libros', to: '/archivo?anio=General' },
   // { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
   // { title: 'Explorar Archivo', icon: 'mdi-archive-eye-outline', value: 'archive', to: '/archivo' },
-  { title: 'Glosario Petrolero', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
+  { title: 'Glosario', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
 ]
 
 const handleLogout = async () => {
