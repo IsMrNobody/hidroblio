@@ -195,6 +195,7 @@ const email = ref('')
 const password = ref('')
 const passwordConfirm = ref('')
 const anio = ref('')
+const admin = ref(false)
 
 const mostrarPassword = ref(false)
 const mostrarPasswordConfirm = ref(false)

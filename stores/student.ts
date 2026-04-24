@@ -11,6 +11,7 @@ export const useStudentStore = defineStore('student', {
             level: 1, // Gamificación: Nivel actual
             xp: 150, // Puntos de experiencia
             maxXp: 500, // XP necesaria para siguiente nivel
+            admin: false, // Control de acceso administrativo
         },
         unlockedResources: [] as string[], // IDs de recursos desbloqueados
         notifications: [] as string[],

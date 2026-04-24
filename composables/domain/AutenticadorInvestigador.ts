@@ -137,6 +137,7 @@ export const useAutenticadorInvestigador = () => {
       level: 1,
       xp: 0,
       maxXp: 500,
+      admin: false,
       unlockedResources: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -158,6 +159,7 @@ export const useAutenticadorInvestigador = () => {
             level: data.level || 1,
             xp: data.xp || 0,
             maxXp: data.maxXp || 500,
+            admin: data.admin || false,
           },
           unlockedResources: data.unlockedResources || [],
         })

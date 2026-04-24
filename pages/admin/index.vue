@@ -1,6 +1,17 @@
 <!-- pages/admin/index.vue -->
 <template>
-  <div class="admin-dashboard container-xl py-4 pb-16">
+  <v-fade-transition hide-on-leave>
+    <!-- Estado de Carga -->
+    <div v-if="authStore.cargando" class="loading-state d-flex flex-column align-center justify-center py-12">
+      <div class="academic-spinner mb-6">
+        <v-icon size="84" color="primary" class="pulsating-icon">mdi-shield-account-outline</v-icon>
+      </div>
+      <h2 class="text-h4 font-serif text-primary mb-2">Verificando credenciales...</h2>
+      <p class="text-subtitle-1 text-secondary opacity-70">Accediendo al Panel Maestro de HidroBiblio</p>
+    </div>
+
+    <!-- Contenido Principal (Solo si es admin) -->
+    <div v-else-if="studentStore.profile.admin" class="admin-dashboard container-xl py-4 pb-16">
     <!-- Header -->
     <div :class="['d-flex mb-8', mobile ? 'flex-column text-center' : 'align-center justify-space-between text-left']">
       <div :class="{ 'mb-4': mobile }">
@@ -178,18 +189,24 @@
       </v-card>
     </v-dialog>
   </div>
+  </v-fade-transition>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useGestorArticulos, type Articulo } from '~/composables/domain/GestorArticulos'
+import { useAuthStore } from '~/stores/auth'
+import { useStudentStore } from '~/stores/student'
 import AdminArticleForm from '~/components/admin/AdminArticleForm.vue'
 import GlossaryManager from '~/components/admin/GlossaryManager.vue'
 
+const authStore = useAuthStore()
+const studentStore = useStudentStore()
+
 definePageMeta({
   layout: 'default',
-  middleware: ['auth']
+  middleware: ['admin']
 })
 
 const { mobile } = useDisplay()
@@ -281,6 +298,24 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.loading-state {
+  min-height: 70vh;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif !important;
+}
+
+.pulsating-icon {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .font-display {
   font-family: 'Playfair Display', serif !important;
 }
