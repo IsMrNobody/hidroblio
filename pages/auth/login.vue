@@ -100,6 +100,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useStudentStore } from '~/stores/student'
 import { useAutenticadorInvestigador } from '~/composables/domain/AutenticadorInvestigador'
 
 definePageMeta({
@@ -108,6 +109,7 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
+const studentStore = useStudentStore()
 const { iniciarSesion, iniciarSesionConGoogle } = useAutenticadorInvestigador()
 
 const formRef = ref()
@@ -122,6 +124,10 @@ const reglas = {
   email: (v: string) => /.+@.+\..+/.test(v) || 'Correo electrónico no válido',
 }
 
+const obtenerRutaRedireccion = () => {
+  return studentStore.profile.admin ? '/admin' : '/biblioteca'
+}
+
 const handleLogin = async () => {
   const { valid } = await formRef.value.validate()
   if (!valid) return
@@ -129,7 +135,8 @@ const handleLogin = async () => {
   cargando.value = true
   try {
     await iniciarSesion(email.value, password.value)
-    navigateTo('/biblioteca')
+    await nextTick()
+    navigateTo(obtenerRutaRedireccion())
   } catch {
     // Error ya manejado en el composable
   } finally {
@@ -141,7 +148,8 @@ const handleGoogleLogin = async () => {
   cargandoGoogle.value = true
   try {
     await iniciarSesionConGoogle()
-    navigateTo('/biblioteca')
+    await nextTick()
+    navigateTo(obtenerRutaRedireccion())
   } catch {
     // Error ya manejado en el composable
   } finally {

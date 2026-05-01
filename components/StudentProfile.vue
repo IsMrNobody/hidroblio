@@ -169,13 +169,17 @@ const navegarAlAnio = (anio: string) => {
   router.push({ path: '/archivo', query: { anio } })
 }
 
-const menuItems = [
-  { title: 'Mi Biblioteca', icon: 'mdi-book-open-outline', value: 'library', to: '/biblioteca' },
-  { title: 'Libros', icon: 'mdi-book-multiple', value: 'libros', to: '/archivo?anio=General' },
-  // { title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' },
-  // { title: 'Explorar Archivo', icon: 'mdi-archive-eye-outline', value: 'archive', to: '/archivo' },
-  { title: 'Glosario', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
-]
+const menuItems = computed(() => {
+  const items = [
+    { title: 'Mi Biblioteca', icon: 'mdi-book-open-outline', value: 'library', to: '/biblioteca' },
+    { title: 'Libros', icon: 'mdi-book-multiple', value: 'libros', to: '/archivo?anio=General' },
+    { title: 'Glosario', icon: 'mdi-book-alphabet', value: 'glosario', to: '/glosario' },
+  ]
+  if (store.profile.admin) {
+    items.unshift({ title: 'Panel Administrativo', icon: 'mdi-shield-crown-outline', value: 'admin', to: '/admin' })
+  }
+  return items
+})
 
 const handleLogout = async () => {
   await cerrarSesion()
