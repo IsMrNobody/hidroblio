@@ -175,7 +175,7 @@ const formRef = ref()
 const isSaving = ref(false)
 const isUploading = ref(false)
 const fotoPreview = ref('')
-const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"', 'General']
+const opcionesAnio = ['1ro', '2do', '3ro', '4to', '5to', 'General']
 
 // Formulario reactivo base
 const form = reactive({

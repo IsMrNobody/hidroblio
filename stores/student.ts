@@ -5,7 +5,7 @@ export const useStudentStore = defineStore('student', {
     state: () => ({
         profile: {
             name: 'Estudiante',
-            year: '1ro "U"',
+            year: '1ro',
             section: 'A',
             avatar: 'mdi-account-school',
             level: 1, // Gamificación: Nivel actual
@@ -25,7 +25,11 @@ export const useStudentStore = defineStore('student', {
     },
     actions: {
         updateProfile(newProfile: { name: string, year: string, section: string }) {
-            this.profile = { ...this.profile, ...newProfile }
+            this.profile = { 
+                ...this.profile, 
+                ...newProfile,
+                year: newProfile.year ? newProfile.year.replace(/\s*"U"\s*/g, '') : this.profile.year
+            }
             this.addNotification(`¡Bienvenido, ${newProfile.name}!`)
         },
         gainXp(amount: number) {

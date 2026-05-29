@@ -28,6 +28,9 @@
       <div class="hero-overlay"></div>
       <div class="hero-content relative z-10 animate-fade-up">
         <!-- <span class="text-caption font-weight-black text-white letter-spacing-2 opacity-60 mb-4 d-block">EST. 2024 • REPOSITORIO GLOBAL</span> -->
+        <div class="d-flex justify-center mb-6">
+          <v-img src="/images/LOGO RCC.png" max-height="130" max-width="130" contain class="rcc-logo"></v-img>
+        </div>
         <h1 class="text-h2 text-md-h1 font-weight-black text-white font-display mb-6">
           Bienvenido a <br>
           <span class="italic-serif text-primary animated-word">
@@ -59,11 +62,10 @@
         <v-col cols="12" md="7" class="pr-md-16">
           <h2 class="text-h3 font-weight-black text-primary font-display mb-8">Nuestro Objetivo</h2>
           <p class="text-h5 italic text-secondary font-weight-medium mb-10 leading-relaxed quote-text">
-            "En nuestra biblioteca virtual, nos dedicamos a centralizar y preservar la riqueza del conocimiento técnico e histórico relacionado con los hidrocarburos."
+            "En la Biblioteca Virtual de la Educación Media Técnica Especialidad Hidrocarburos Mención: Petróleo y Gas Natural nos dedicamos a centralizar y preservar la riqueza del conocimiento técnico e histórico relacionado con los hidrocarburos."
           </p>
           <p class="text-body-1 text-secondary opacity-80 leading-loose">
-            HidroBiblio es un espacio creado para investigadores, estudiantes y profesionales que buscan acceder a información relevante sobre la exploración, producción, refinación y sostenibilidad de los hidrocarburos. 
-            Nuestra misión es democratizar el acceso a la información especializada, brindando un portal robusto para el estudio de la energía.
+            Hidrobiblio es un espacio creado para los estudiantes de la Educación Media Técnica Especialidad Hidrocarburos Mención: Petróleo y Gas Natural de la Unidad Educativa Roberto Castillo Cardier que también puede ser utilizada por investigadores y profesionales que buscan acceder a información relevante sobre la exploración, producción, refinación y sostenibilidad de los hidrocarburos. Nuestra misión es democratizar el acceso a la información especializada, brindando un portal robusto para el estudio de temas relacionados con la Industria Petrolera.
           </p>
         </v-col>
         <v-col cols="12" md="5">

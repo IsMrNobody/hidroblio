@@ -49,7 +49,11 @@ export const useGestorDatosEstudiante = () => {
       if (docSnap.exists()) {
         const data = docSnap.data()
         // Actualizar el store con los datos remotos
-        studentStore.profile = { ...studentStore.profile, ...data }
+        studentStore.profile = { 
+          ...studentStore.profile, 
+          ...data,
+          year: data.year ? data.year.replace(/\s*"U"\s*/g, '') : studentStore.profile.year
+        }
         if (data.unlockedResources) {
           studentStore.unlockedResources = data.unlockedResources
         }
@@ -75,7 +79,11 @@ export const useGestorDatosEstudiante = () => {
       if (doc.exists()) {
         const data = doc.data()
         studentStore.$patch({
-          profile: { ...studentStore.profile, ...data },
+          profile: { 
+            ...studentStore.profile, 
+            ...data,
+            year: data.year ? data.year.replace(/\s*"U"\s*/g, '') : studentStore.profile.year
+          },
           unlockedResources: data.unlockedResources || []
         })
       }

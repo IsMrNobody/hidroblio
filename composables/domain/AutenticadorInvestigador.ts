@@ -126,7 +126,7 @@ export const useAutenticadorInvestigador = () => {
 
   // ─── Funciones internas ───────────────────────────────────
 
-  const crearPerfilFirestore = async (user: User, nombre: string, year = '1ro "U"', section = 'A') => {
+  const crearPerfilFirestore = async (user: User, nombre: string, year = '1ro', section = 'A') => {
     const docRef = doc($db, 'estudiantes', user.uid)
     await setDoc(docRef, {
       name: nombre,
@@ -153,7 +153,7 @@ export const useAutenticadorInvestigador = () => {
         studentStore.$patch({
           profile: {
             name: data.name || 'Estudiante',
-            year: data.year || '1ro "U"',
+            year: data.year ? data.year.replace(/\s*"U"\s*/g, '') : '1ro',
             section: data.section || 'A',
             avatar: data.avatar || 'mdi-account-school',
             level: data.level || 1,

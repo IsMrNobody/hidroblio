@@ -13,7 +13,7 @@ Cuerpo de texto en una fuente Sans-Serif geométrica (ej. Inter o Montserrat) pa
 Arquitectura de Información:
 Desktop: Layout de doble columna asimétrica. Columna izquierda (25%) para "Mi Perfil" (gamificado con barra de progreso y avatar). Columna derecha (75%) para el catálogo dinámico organizado en una cuadrícula (Grid) de tarjetas interactivas.
 Mobile: Diseño Mobile-First. El perfil se convierte en un "Bottom Sheet" o un menú lateral (Drawer) accesible mediante un gesto. Las tarjetas del catálogo se apilan verticalmente con áreas de toque amplias (mínimo 44px).
-Micro-interacciones: Implementa efectos de hover suaves en las tarjetas de los años (1ro a 5to "U") que eleven ligeramente la tarjeta (shadow-depth) y cambien el color del borde.
+Micro-interacciones: Implementa efectos de hover suaves en las tarjetas de los años (1ro a 5to) que eleven ligeramente la tarjeta (shadow-depth) y cambien el color del borde.
 3. Gamificación y Funcionalidad Educativa:
 Panel de Usuario: Diseña un widget de "Progreso de Lectura" visualmente atractivo.
 Visualizador de Recursos: La interfaz de lectura debe ser limpia. Incluye una barra de herramientas flotante (Floating Action Button - FAB) que permita:

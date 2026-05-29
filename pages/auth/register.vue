@@ -202,7 +202,7 @@ const mostrarPasswordConfirm = ref(false)
 const cargando = ref(false)
 const cargandoGoogle = ref(false)
 
-const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
+const opcionesAnio = ['1ro', '2do', '3ro', '4to', '5to']
 
 const reglas = {
   requerido: (v: string) => !!v || 'Este campo es requerido',

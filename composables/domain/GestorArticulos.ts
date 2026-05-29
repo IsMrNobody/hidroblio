@@ -54,10 +54,14 @@ export const useGestorArticulos = () => {
     try {
       const q = query(collection($db, 'articulos'), orderBy('createdAt', 'desc'))
       const querySnapshot = await getDocs(q)
-      const data = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Articulo[]
+      const data = querySnapshot.docs.map(doc => {
+        const articleData = doc.data() as any
+        return {
+          id: doc.id,
+          ...articleData,
+          anio: articleData.anio ? articleData.anio.replace(/\s*"U"\s*/g, '') : ''
+        }
+      }) as Articulo[]
       
       // Guardar en store para cache global
       store.setArticulos(data)
@@ -140,7 +144,12 @@ export const useGestorArticulos = () => {
       const docRef = doc($db, 'articulos', id)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as Articulo
+        const articleData = docSnap.id ? (docSnap.data() as any) : {}
+        return {
+          id: docSnap.id,
+          ...articleData,
+          anio: articleData.anio ? articleData.anio.replace(/\s*"U"\s*/g, '') : ''
+        } as Articulo
       }
       return null
     } catch (error) {

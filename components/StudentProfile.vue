@@ -163,7 +163,7 @@ const router = useRouter()
 const { cerrarSesion } = useAutenticadorInvestigador()
 
 const isActive = (path: string) => route.path === path
-const opcionesAnio = ['1ro "U"', '2do "U"', '3ro "U"', '4to "U"', '5to "U"']
+const opcionesAnio = ['1ro', '2do', '3ro', '4to', '5to']
 
 const navegarAlAnio = (anio: string) => {
   router.push({ path: '/archivo', query: { anio } })
